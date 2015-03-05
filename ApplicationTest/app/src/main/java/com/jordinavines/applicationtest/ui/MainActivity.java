@@ -1,20 +1,22 @@
 package com.jordinavines.applicationtest.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.jordinavines.applicationtest.R;
-import com.jordinavines.applicationtest.volley.ImageCache;
-import com.jordinavines.applicationtest.volley.ImageFetcher;
+import com.jordinavines.applicationtest.model.User;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AbstractClass {
 
-    public ImageFetcher mImageFetcher;
-    private static final String IMAGE_CACHE_DIR = "images";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,23 +28,35 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
 
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int height = displayMetrics.heightPixels/2;
-        final int width = displayMetrics.widthPixels ;
 
-        final int longest = (height > width ? height : width) / 2;
-
-        ImageCache.ImageCacheParams cacheParams =
-                new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
-
-        mImageFetcher = new ImageFetcher(this, longest);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(false);
     }
 
 
+    public void gotoDetails(AdapterView<?> parent, View view, int position, long id, User _user){
+        // Construct an Intent as normal
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.EXTRA_PARAM_USER, _user);
+
+        // BEGIN_INCLUDE(start_activity)
+        /**
+         * Now create an {@link android.app.ActivityOptions} instance using the
+         * {@link ActivityOptionsCompat#makeSceneTransitionAnimation(Activity, Pair[])} factory
+         * method.
+         */
+        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+
+                // Now we provide a list of Pair items which contain the view we can transitioning
+                // from, and the name of the view it is transitioning to, in the launched activity
+                new Pair<View, String>(view.findViewById(R.id.image),
+                        DetailActivity.VIEW_IMAGE));
+
+
+        // Now we can start the Activity, providing the activity options as a bundle
+        ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
+        // END_INCLUDE(start_activity)
+    }
+//new Pair<View, String>(view.findViewById(R.id.textview_name), DetailActivity.VIEW_NAME_HEADER_TITLE));
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,32 +85,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mImageFetcher!=null) {
-            mImageFetcher.closeCache();
 
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mImageFetcher!=null) {
-            mImageFetcher.setExitTasksEarly(false);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mImageFetcher!=null) {
-            mImageFetcher.setPauseWork(false);
-            mImageFetcher.setExitTasksEarly(true);
-            mImageFetcher.flushCache();
-        }
-    }
 
 
     @Override
@@ -116,5 +105,6 @@ public class MainActivity extends ActionBarActivity {
     protected void onStop() {
         super.onStop();
     }
+
 
 }

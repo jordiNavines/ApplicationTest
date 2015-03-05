@@ -1,11 +1,14 @@
 package com.jordinavines.applicationtest.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Arrays;
 
 /**
  * Created by jordinavines on 03/03/2015.
  */
-public class User {
+public class User implements Parcelable {
 
     int _id;
 
@@ -16,6 +19,8 @@ public class User {
     String avatar;
 
     String address;
+
+    String phone;
 
     String email;
 
@@ -109,6 +114,15 @@ public class User {
         return name.toString();
     }
 
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -122,5 +136,49 @@ public class User {
                 ", department='" + department + '\'' +
                 ", subordinates=" + Arrays.toString(subordinates) +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // write your object's data to the passed-in Parcel
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(_id);
+        out.writeString(about);
+        out.writeString(avatar);
+        out.writeString(address);
+        out.writeString(email);
+        out.writeString(dob);
+        out.writeString(department);
+        out.writeString(phone);
+        out.writeIntArray(subordinates);
+        out.writeParcelable(name, flags);
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private User(Parcel in) {
+        _id= in.readInt();
+        about= in.readString();
+        avatar= in.readString();
+        address= in.readString();
+        email= in.readString();
+        dob= in.readString();
+        department= in.readString();
+        phone= in.readString();
+        subordinates= in.createIntArray();
+        name= (Name)in.readParcelable(Name.class.getClassLoader());
     }
 }
