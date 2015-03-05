@@ -8,4 +8,10 @@
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
 
+
+    <string name="department">Department</string>
+    <string name="dob">Birthday</string>
+    <string name="address">Address</string>
+    <string name="about">About</string>
+
 </resources>

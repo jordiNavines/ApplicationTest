@@ -8,4 +8,6 @@
     <dimen name="image_width">50dp</dimen>
 
     <dimen name="padding_users">10dp</dimen>
+    <dimen name="button_size">50dp</dimen>
+
 </resources>
