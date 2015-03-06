@@ -3,6 +3,7 @@ package com.jordinavines.applicationtest.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -30,6 +31,10 @@ public class User implements Parcelable {
 
     int[] subordinates;
 
+    ArrayList<User> subordinates_list;
+
+
+
     public int getId() {
         return _id;
     }
@@ -52,6 +57,12 @@ public class User implements Parcelable {
 
     public void setName(Name name) {
         this.name = name;
+    }
+
+    public void createtName(String names) {
+//        String[] array=  Arrays.asList(names).toArray(new String[2]);
+//        this.name = new Name();
+//        name.setFirst();
     }
 
     public String getAbout() {
@@ -123,11 +134,14 @@ public class User implements Parcelable {
         this.phone = phone;
     }
 
+    public User() {
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + _id +
-                ", name='" + name.toString() + '\'' +
+               // ", name='" + name.toString() + '\'' +
                 ", about='" + about + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", address='" + address + '\'' +

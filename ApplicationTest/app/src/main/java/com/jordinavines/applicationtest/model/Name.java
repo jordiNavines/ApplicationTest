@@ -28,9 +28,16 @@ public class Name implements Parcelable{
         this.last = last;
     }
 
+    public String[] getNameArray(){
+        return new String[]{first, last};
+    }
+
     @Override
     public String toString() {
         return first + " " + last;
+    }
+
+    public Name() {
     }
 
     @Override

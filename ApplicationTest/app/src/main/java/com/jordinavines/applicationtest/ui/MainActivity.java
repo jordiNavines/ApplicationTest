@@ -12,6 +12,9 @@ import android.widget.AdapterView;
 
 import com.jordinavines.applicationtest.R;
 import com.jordinavines.applicationtest.model.User;
+import com.jordinavines.applicationtest.utils.ListUtil;
+
+import java.sql.SQLException;
 
 
 public class MainActivity extends AbstractClass {
@@ -22,12 +25,22 @@ public class MainActivity extends AbstractClass {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        init();
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new ListUserFragment())
                     .commit();
         }
+    }
 
+    public void init(){
+        try {
+            ListUtil.initDataSource(this.getApplicationContext());
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        }
 
     }
 

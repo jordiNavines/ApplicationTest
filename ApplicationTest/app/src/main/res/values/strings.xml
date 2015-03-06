@@ -14,4 +14,6 @@
     <string name="address">Address</string>
     <string name="about">About</string>
 
+    <string name="sub">Subordinates</string>
+
 </resources>

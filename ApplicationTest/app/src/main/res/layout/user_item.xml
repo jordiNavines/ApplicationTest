@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="70dp"
     android:id="@+id/item"
     android:padding="@dimen/padding_users">
 
@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/image"
         android:layout_toEndOf="@+id/image">
 
@@ -38,5 +37,11 @@
             android:id="@+id/textView_department" />
     </LinearLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/darker_gray"/>
 
 </RelativeLayout>

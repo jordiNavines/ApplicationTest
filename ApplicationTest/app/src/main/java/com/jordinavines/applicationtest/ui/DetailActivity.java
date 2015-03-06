@@ -9,10 +9,12 @@ import android.support.v4.view.ViewCompat;
 import android.transition.Transition;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jordinavines.applicationtest.R;
 import com.jordinavines.applicationtest.model.User;
+import com.jordinavines.applicationtest.utils.ListUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +32,8 @@ public class DetailActivity extends AbstractClass implements View.OnClickListene
     public static final String VIEW_IMAGE = "image";
 
     private ImageView mHeaderImageView;
-    private TextView name, phone, sms, email, address, dob, about, department;
+    private TextView name, phone, email, address, dob, about, department;
+    private LinearLayout container_sub;
 
     private User mUser;
 
@@ -51,6 +54,7 @@ public class DetailActivity extends AbstractClass implements View.OnClickListene
         dob = (TextView) findViewById(R.id.textView_details_dob);
         department = (TextView) findViewById(R.id.textView_details_department);
 
+        container_sub= (LinearLayout) findViewById(R.id.container_sub);
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
 //            int buttonSize = (int) getResources().getDimension(R.dimen.button_size);
@@ -79,6 +83,8 @@ public class DetailActivity extends AbstractClass implements View.OnClickListene
 
 
     public void loadContent(){
+        loadSub();
+
         name.setText(mUser.getCompletName());
         email.setText(mUser.getEmail());
         phone.setText("");
@@ -94,6 +100,15 @@ public class DetailActivity extends AbstractClass implements View.OnClickListene
             dob.setText(formattedTime);
         } catch (ParseException e) {
             // something went wrong
+        }
+
+        ListUtil.getUserDatabase(this.getApplicationContext(), mUser.get_id());
+    }
+
+
+    private void loadSub(){
+        if (mUser!=null && mUser.getSubordinates().length>0){
+
         }
     }
 
