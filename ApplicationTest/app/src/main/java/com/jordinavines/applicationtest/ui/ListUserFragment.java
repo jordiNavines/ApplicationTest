@@ -182,7 +182,12 @@ public class ListUserFragment extends Fragment implements Handler.Callback, View
 
     @Override
     public void onRefresh() {
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeLayout.setRefreshing(false);
+            }
+        }, 2000);
     }
 
     @Override
