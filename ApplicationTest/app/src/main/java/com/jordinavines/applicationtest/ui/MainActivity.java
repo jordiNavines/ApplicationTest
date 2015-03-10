@@ -106,8 +106,11 @@ public class MainActivity extends AbstractClass {
     }
 
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ListUtil.closeDataSource();
+    }
 
     @Override
     public void onBackPressed() {

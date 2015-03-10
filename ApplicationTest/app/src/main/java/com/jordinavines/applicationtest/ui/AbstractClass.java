@@ -2,14 +2,12 @@ package com.jordinavines.applicationtest.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 
 import com.jordinavines.applicationtest.R;
-import com.jordinavines.applicationtest.utils.ListUtil;
 import com.jordinavines.applicationtest.volley.ImageCache;
 import com.jordinavines.applicationtest.volley.ImageFetcher;
 
@@ -55,13 +53,6 @@ abstract class AbstractClass extends ActionBarActivity {
                 return true;
             case R.id.action_filter_department:
                 return true;
-            case R.id.action_option_share:
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, "share user");
-
-                startActivity(Intent.createChooser(intent, "Share by:"));
-                return true;
             default:
                 finish();
         }
@@ -87,8 +78,6 @@ abstract class AbstractClass extends ActionBarActivity {
         if (mImageFetcher!=null) {
             mImageFetcher.closeCache();
         }
-
-        ListUtil.closeDataSource();
     }
 
     @Override

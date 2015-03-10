@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by jordinavines on 03/03/2015.
@@ -132,17 +131,12 @@ public class User implements Parcelable {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + _id +
-               // ", name='" + name.toString() + '\'' +
-                ", about='" + about + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", dob='" + dob + '\'' +
-                ", department='" + department + '\'' +
-                ", subordinates=" + Arrays.toString(subordinates) +
-                '}';
+        return "User" +
+                "  name: '" + name.toString() + '\'' +
+                ", avatar: '" + avatar + '\'' +
+                ", address: '" + address + '\'' +
+                ", email: '" + email + '\'' +
+                ", department:'" + department;
     }
 
     @Override

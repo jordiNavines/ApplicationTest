@@ -340,15 +340,15 @@ public class DetailActivity extends AbstractClass implements View.OnClickListene
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_EMAIL, mUser.getEmail());
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
-                intent.putExtra(Intent.EXTRA_TEXT, "I'm email body.");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "subject");
+                intent.putExtra(Intent.EXTRA_TEXT, "message");
 
                 startActivity(Intent.createChooser(intent, "Send Email"));
                 break;
             case R.id.layout_details_sms:
                 Uri uri = Uri.parse("smsto:"+mUser.getPhone());
                 Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-                it.putExtra("sms_body", "The SMS text");
+                it.putExtra("sms_body", "message");
                 startActivity(it);
                 break;
             case R.id.layout_details_telephone:
@@ -357,5 +357,26 @@ public class DetailActivity extends AbstractClass implements View.OnClickListene
                 startActivity(callIntent);
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_option_share:
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, mUser.toString());
+
+                startActivity(Intent.createChooser(intent, "Share by:"));
+                return true;
+            default:
+                finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
