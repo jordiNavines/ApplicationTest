@@ -10,6 +10,7 @@ import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 import com.google.gson.Gson;
 import com.jordinavines.applicationtest.app.AppController;
+import com.jordinavines.applicationtest.common.UserComparator;
 import com.jordinavines.applicationtest.constants.Constants;
 import com.jordinavines.applicationtest.model.User;
 import com.jordinavines.applicationtest.mysql.DataSource;
@@ -30,8 +31,9 @@ public class ListUtil {
 
     public interface ListUserListener {
         public void onGetListUserSuccess(ArrayList<User> users);
-        public void onRefreshSuccess(ArrayList<User> users);
+        public void onGetStoredListUserSuccess(ArrayList<User> users);
         public void onGetListUserError();
+        public void onGetStoredListUserError();
     }
 
     private static String tag= "getUSers";
@@ -58,6 +60,9 @@ public class ListUtil {
 
                 if (users!=null) {
                     ArrayList<User> usersdownloaded= new ArrayList<User>(Arrays.asList(users));
+                    UserComparator compare = new UserComparator();
+                    java.util.Collections.sort(usersdownloaded,compare);
+
                     listener.onGetListUserSuccess(usersdownloaded);
                     storeUsers(AppController.getInstance().getApplicationContext(), usersdownloaded);
                 }else{
@@ -107,11 +112,43 @@ public class ListUtil {
     }
 
     public static User getUserDatabase(Context ctx, int id){
-
             return datasource.getUser(ctx, id);
+    }
 
+    public static boolean isUsersStoredEmpty(Context _context){
+        return datasource.isUsersEmpty(_context);
+    }
+
+    public static void getUsersStored(Context _context, ListUserListener _listener){
+        GetStoredUsers getStoredUserstask= new GetStoredUsers(_context, _listener);
+        getStoredUserstask.execute();
+    }
+
+
+    private static class GetStoredUsers extends AsyncTask<Void, Void, Void> {
+        Context context;
+        ListUserListener listener;
+
+        private GetStoredUsers(Context _context, ListUserListener _listener) {
+            this.listener= _listener;
+            this.context= _context;
+        }
+
+        protected Void doInBackground(Void... voids) {
+
+            ArrayList<User> usersStored= datasource.getAllUsers(context);
+            if (usersStored!=null && usersStored.size()>0){
+                listener.onGetStoredListUserSuccess(usersStored);
+            }else{
+                listener.onGetStoredListUserError();
+            }
+
+
+            return null;
+        }
 
     }
+
 
     /**
      *
@@ -136,15 +173,40 @@ public class ListUtil {
 
         protected Void doInBackground(Void... voids) {
 
-            Uri uri = Uri.parse(UserContentProvider.CONTENT_URI+"");
-            context.getContentResolver().delete(uri, null, null);
+            Uri uri = Uri.parse(UserContentProvider.CONTENT_URI_USER+"");
+            //context.getContentResolver().delete(uri, null, null);
 
             for (int i = 0; i < users.size(); i++) {
                 datasource.addUser(context, users.get(i));
+                storeSubordinates(context, users.get(i));
+
             }
 
             return null;
         }
 
     }
+
+
+    private static void storeSubordinates(Context context, User user){
+        if (user!=null && user.getSubordinates()!=null && user.getSubordinates().length>0){
+            for (int i = 0; i < user.getSubordinates().length; i++) {
+                datasource.addSubordinates(context, user.getId(), user.getSubordinates()[i]);
+            }
+        }
+    }
+
+
+    public static ArrayList<User> retrieveSubordinates(int id){
+        ArrayList<User> subordinates= new ArrayList<User>();
+
+        return datasource.getSubordiantes(id);
+    }
+
+    public static ArrayList<User> retrieveBosses(int id){
+        ArrayList<User> subordinates= new ArrayList<User>();
+
+        return datasource.getBosses(id);
+    }
+
 }

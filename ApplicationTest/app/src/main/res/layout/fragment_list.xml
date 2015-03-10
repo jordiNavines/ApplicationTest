@@ -5,6 +5,15 @@
     android:layout_height="match_parent"
     tools:context="com.jordinavines.applicationtest.ui.ListUserFragment">
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/try_again"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:id="@+id/try_again_button" />
+
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"

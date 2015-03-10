@@ -225,7 +225,15 @@
         <include
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_margin="10dp"
             layout="@layout/list_subordinates"/>
+
+
+        <include
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="10dp"
+            layout="@layout/list_report"/>
 
     </LinearLayout>
 

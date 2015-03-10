@@ -1,9 +1,15 @@
 package com.jordinavines.applicationtest.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
+import android.view.MenuItem;
 
+import com.jordinavines.applicationtest.R;
+import com.jordinavines.applicationtest.utils.ListUtil;
 import com.jordinavines.applicationtest.volley.ImageCache;
 import com.jordinavines.applicationtest.volley.ImageFetcher;
 
@@ -39,12 +45,50 @@ abstract class AbstractClass extends ActionBarActivity {
 
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_filter_name:
+                return true;
+            case R.id.action_filter_department:
+                return true;
+            case R.id.action_option_share:
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, "share user");
+
+                startActivity(Intent.createChooser(intent, "Share by:"));
+                return true;
+            default:
+                finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void showMessage(String title, String message){
+        AlertDialog.Builder alert= new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        alert.show();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mImageFetcher!=null) {
             mImageFetcher.closeCache();
-
         }
+
+        ListUtil.closeDataSource();
     }
 
     @Override

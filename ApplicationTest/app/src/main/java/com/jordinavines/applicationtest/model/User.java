@@ -43,13 +43,6 @@ public class User implements Parcelable {
         this._id = id;
     }
 
-    public int get_id() {
-        return _id;
-    }
-
-    public void set_id(int _id) {
-        this._id = _id;
-    }
 
     public Name getName() {
         return name;

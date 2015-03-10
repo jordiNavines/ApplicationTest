@@ -19,7 +19,7 @@ import java.sql.SQLException;
 
 public class MainActivity extends AbstractClass {
 
-
+    ListUserFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +29,10 @@ public class MainActivity extends AbstractClass {
         init();
 
         if (savedInstanceState == null) {
+
+            fragment= new ListUserFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ListUserFragment())
+                    .add(R.id.container, fragment)
                     .commit();
         }
     }
@@ -75,6 +77,9 @@ public class MainActivity extends AbstractClass {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        MenuItem item = menu.findItem(R.id.action_option_share);
+        item.setVisible(false);
         return true;
     }
 
@@ -86,12 +91,15 @@ public class MainActivity extends AbstractClass {
         int id = item.getItemId();
 
         switch (id){
-            case R.id.action_settings:
+            case R.id.action_filter_department:
+                if(fragment!=null)
+                    fragment.filterDepartment();
                 return true;
-            case R.id.action_search:
+            case R.id.action_filter_name:
+                if(fragment!=null)
+                    fragment.filterName();
                 return true;
-            case R.id.action_filter:
-                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

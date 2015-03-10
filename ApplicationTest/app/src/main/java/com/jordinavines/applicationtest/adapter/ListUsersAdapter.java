@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by jordinavines on 03/03/2015.
  */
-public class ListUsersAdapter extends RecyclerView.Adapter<ListUsersAdapter.ViewHolder> {
+public class ListUsersAdapter extends RecyclerView.Adapter<ListUsersAdapter.UserViewHolder> {
 
     private final Context mContext;
     private ArrayList<User> users;
@@ -57,23 +57,21 @@ public class ListUsersAdapter extends RecyclerView.Adapter<ListUsersAdapter.View
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
-        return new ViewHolder(v);
+        return new UserViewHolder(v);
     }
+
+
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final UserViewHolder holder, final int position) {
         holder.name.setText(users.get(position).getCompletName());
         holder.department.setText(users.get(position).getDepartment());
 
         if (users.get(position).getAvatar() != null)
             mImageFetcher.loadImage(users.get(position).getAvatar(), holder.image);
-        else
-            mImageFetcher.loadImageRandom(position, holder.image);
-
-
     }
 
     public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
@@ -83,14 +81,14 @@ public class ListUsersAdapter extends RecyclerView.Adapter<ListUsersAdapter.View
 
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView name, department;
         NetworkImageView image;
         RelativeLayout item;
         View v;
 
-        public ViewHolder(View itemView) {
+        public UserViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             name = (TextView) itemView.findViewById(R.id.textView_name);

@@ -63,10 +63,6 @@ public abstract class ImageWorker {
     }
 
 
-    public void loadImageRandom(Integer data, ImageView imageView) {
-        loadImage(data, imageView);
-    }
-
     /**
      * Load an image specified by the data parameter into an ImageView (override
      * {@link com.jordinavines.applicationtest.volley.ImageWorker#processBitmap(Object)} to define the processing logic). A memory and

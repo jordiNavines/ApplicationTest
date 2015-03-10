@@ -1,7 +1,7 @@
 package com.jordinavines.applicationtest.mysql;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.jordinavines.applicationtest.dao.UserDao;
+import com.jordinavines.applicationtest.dao.UserRelationDao;
 
 /**
  * Created by jordinavines on 06/03/2015.
@@ -23,22 +24,18 @@ public class UserContentProvider extends ContentProvider {
     // used for the UriMacher
     private static final int USERS = 10;
     private static final int USER_ID = 20;
+    private static final int RELATIONS = 30;
 
     private static final String AUTHORITY = "com.jordinavines.applicationtest.contentprovider";
 
-    private static final String BASE_PATH = "users";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-            + "/" + BASE_PATH);
-
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-            + "/users";
-    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
-            + "/user";
+    public static final Uri CONTENT_URI_USER = Uri.parse("content://" + AUTHORITY + "/users" );
+    public static final Uri CONTENT_URI_RELATIONS = Uri.parse("content://" + AUTHORITY+ "/relations");
 
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
-        sURIMatcher.addURI(AUTHORITY, BASE_PATH, USERS);
-        sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", USER_ID);
+        sURIMatcher.addURI(AUTHORITY, "users", USERS);
+        sURIMatcher.addURI(AUTHORITY, "users/#", USER_ID);
+        sURIMatcher.addURI(AUTHORITY, "relations", RELATIONS);
     }
 
     @Override
@@ -88,17 +85,22 @@ public class UserContentProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = database.getWritableDatabase();
-        int rowsDeleted = 0;
+
         long id = 0;
         switch (uriType) {
             case USERS:
                 id = sqlDB.insert(UserDao.TABLE_USERS, null, values);
                 break;
+            case RELATIONS:
+                id = sqlDB.insert(UserRelationDao.TABLE_USERS_RELATIONS, null, values);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(BASE_PATH + "/" + id);
+
+        Uri itemUri = ContentUris.withAppendedId(uri, id);
+        getContext().getContentResolver().notifyChange(itemUri, null);
+        return itemUri;
     }
 
     @Override

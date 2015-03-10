@@ -6,7 +6,9 @@
     <string name="action_settings">Settings</string>
 
     <string name="action_search">Search</string>
-    <string name="action_filter">Filter</string>
+    <string name="filter_name">Filter by Name</string>
+    <string name="filter_department">Filter by Department</string>
+    <string name="action_share">Share</string>
 
 
     <string name="department">Department</string>
@@ -14,6 +16,16 @@
     <string name="address">Address</string>
     <string name="about">About</string>
 
+    <string name="boss">Boss</string>
     <string name="sub">Subordinates</string>
+
+    <string name="try_again">Try again</string>
+
+    <string name="ok">Ok</string>
+    <string name="connection">Connection</string>
+    <string name="offline_message">You\'re currently offline. Please check your connection</string>
+
+    <string name="error">Error</string>
+    <string name="error_message">Ops there was a problem getting the users. Please try again</string>
 
 </resources>

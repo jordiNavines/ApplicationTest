@@ -1,6 +1,8 @@
 package com.jordinavines.applicationtest.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,30 +13,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.jordinavines.applicationtest.R;
 import com.jordinavines.applicationtest.adapter.ListUsersAdapter;
 import com.jordinavines.applicationtest.adapter.listener.UserListAdapterListener;
+import com.jordinavines.applicationtest.common.DepartmentComparator;
+import com.jordinavines.applicationtest.common.UserComparator;
 import com.jordinavines.applicationtest.model.User;
 import com.jordinavines.applicationtest.utils.ListUtil;
 import com.jordinavines.applicationtest.utils.LogUtils;
+import com.jordinavines.applicationtest.utils.Utils;
 
 import java.util.ArrayList;
 
 /**
  * Created by jordinavines on 03/03/2015.
  */
-public class ListUserFragment extends Fragment implements ListUtil.ListUserListener, SwipeRefreshLayout.OnRefreshListener, UserListAdapterListener, View.OnClickListener, AdapterView.OnItemClickListener {
+public class ListUserFragment extends Fragment implements Handler.Callback, View.OnClickListener, ListUtil.ListUserListener, SwipeRefreshLayout.OnRefreshListener, UserListAdapterListener, AdapterView.OnItemClickListener {
 
     public ListUserFragment() {
     }
 
     MainActivity activity;
 
-    private RecyclerView mListView;
+
     private SwipeRefreshLayout mSwipeLayout;
+    private RecyclerView mListView;
     private ProgressBar progress;
+    private Button try_again_button;
 
 
     LinearLayoutManager mLayoutManager;
@@ -43,6 +51,8 @@ public class ListUserFragment extends Fragment implements ListUtil.ListUserListe
 
     ArrayList<User> users= new ArrayList<>();
 
+    Handler mHandler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,11 +60,13 @@ public class ListUserFragment extends Fragment implements ListUtil.ListUserListe
 
         activity= (MainActivity) getActivity();
 
+        mHandler= new Handler(this);
+
         Log.d("on create", "on create");
 
         initUI(rootView);
 
-        ListUtil.retrieveUsers(false, this);
+        getUsers();
 
         return rootView;
     }
@@ -62,28 +74,24 @@ public class ListUserFragment extends Fragment implements ListUtil.ListUserListe
 
     private void initUI(View rootView){
 
+        try_again_button= (Button) rootView.findViewById(R.id.try_again_button);
         progress= (ProgressBar) rootView.findViewById(R.id.progressBar);
+
 
         mListView = (RecyclerView) rootView.findViewById(R.id.list_users);
         mListView.setHasFixedSize(true);
-
-        madapter =new ListUsersAdapter(activity.getApplicationContext(), users, this, activity.mImageFetcher);
-
         //layout manager for recycleview
         mLayoutManager =  new LinearLayoutManager(getActivity());
-
-        mListView.setAdapter(madapter);
         mListView.setLayoutManager(mLayoutManager);
+        madapter =new ListUsersAdapter(activity.getApplicationContext(), users, this, activity.mImageFetcher);
         madapter.setOnItemClickListener(this);
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        mListView.setOnClickListener(this);
-
+        mListView.setAdapter(madapter);
 
         mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container_users);
         mSwipeLayout.setOnRefreshListener(this);
-        // mSwipeLayout.setProgressViewOffset(true, (int) Utils.convertDIPtoPixels(getActivity(),20), (int) Utils.convertDIPtoPixels(getActivity(), 70));
 
+        // Set OnItemClickListener so we can be notified on item clicks
+        mListView.setOnClickListener(this);
         mListView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -101,11 +109,47 @@ public class ListUserFragment extends Fragment implements ListUtil.ListUserListe
             }
         });
 
+        try_again_button.setOnClickListener(this);
+    }
 
+
+
+    public void filterName(){
+        UserComparator compare = new UserComparator();
+        java.util.Collections.sort(users,compare);
+
+        madapter.notifyDataSetChanged();
+    }
+
+    public void filterDepartment(){
+        DepartmentComparator compare = new DepartmentComparator();
+        java.util.Collections.sort(users,compare);
+
+        madapter.notifyDataSetChanged();
+    }
+
+    public void clearToDownload(){
+        progress.setVisibility(ProgressBar.VISIBLE);
+        try_again_button.setVisibility(View.GONE);
+    }
+
+    public void getUsers(){
+        if (ListUtil.isUsersStoredEmpty(activity.getApplicationContext())){
+            if (Utils.isConnected(activity.getApplicationContext())) {
+                ListUtil.retrieveUsers(false, this);
+            }else{
+                try_again_button.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+
+                activity.showMessage(activity.getResources().getString(R.string.connection), activity.getResources().getString(R.string.offline_message));
+            }
+        }else{
+            ListUtil.getUsersStored(activity.getApplicationContext(), this);
+        }
     }
 
     public void showUsers(ArrayList<User> _users){
-        progress.setVisibility(ProgressBar.GONE);
+        mHandler.sendEmptyMessage(HIDE_ERROR_BUTTON);
 
         LogUtils.LOGD("show", "show");
         users.addAll(_users);
@@ -118,13 +162,22 @@ public class ListUserFragment extends Fragment implements ListUtil.ListUserListe
     }
 
     @Override
-    public void onRefreshSuccess(ArrayList<User> users) {
-
+    public void onGetStoredListUserSuccess(ArrayList<User> users) {
+        showUsers(users);
     }
 
     @Override
     public void onGetListUserError() {
+        mHandler.sendEmptyMessage(SHOW_ERROR_BUTTON);
 
+        mHandler.sendEmptyMessage(SHOW_MESSAGE_ERROR);
+    }
+
+    @Override
+    public void onGetStoredListUserError() {
+        mHandler.sendEmptyMessage(SHOW_ERROR_BUTTON);
+
+        mHandler.sendEmptyMessage(SHOW_MESSAGE_ERROR);
     }
 
     @Override
@@ -139,13 +192,39 @@ public class ListUserFragment extends Fragment implements ListUtil.ListUserListe
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()){
+            case R.id.try_again_button:
+                clearToDownload();
+                getUsers();
+        }
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         activity.gotoDetails(parent, view, position, id, users.get(position));
+    }
+
+    final int SHOW_ERROR_BUTTON=1;
+    final int SHOW_MESSAGE_ERROR=2;
+    final int HIDE_ERROR_BUTTON=3;
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case SHOW_ERROR_BUTTON:
+                try_again_button.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+                break;
+            case SHOW_MESSAGE_ERROR:
+                activity.showMessage(activity.getResources().getString(R.string.error), activity.getResources().getString(R.string.error_message));progress.setVisibility(View.GONE);
+                break;
+            case HIDE_ERROR_BUTTON:
+                progress.setVisibility(ProgressBar.GONE);
+                try_again_button.setVisibility(View.GONE);
+                break;
+        }
+        return false;
     }
 }
 
